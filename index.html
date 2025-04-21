@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Quiz</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2em;
+      background-color: #f0f4f8;
+    }
+    .quiz-box {
+      background: white;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 0.5em 0;
+      padding: 0.8em;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #e0e0e0;
+      cursor: pointer;
+    }
+    .options button:hover {
+      background-color: #d0d0ff;
+    }
+    .feedback {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+    #next-btn {
+      display: none;
+      margin-top: 1.5em;
+      padding: 0.6em 1.2em;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    #next-btn:hover {
+      background-color: #0056b3;
+    }
+    #score {
+      margin-top: 1em;
+      font-size: 1.1em;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-box">
+    <div class="question" id="question">Loading...</div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div id="score">スコア: 0 / 0</div>
+    <button id="next-btn" onclick="nextQuestion()">次へ ▶</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        word: "mitigate",
+        correct: "軽減する",
+        options: ["軽減する", "加速する", "促進する", "許可する"]
+      },
+      {
+        word: "alleviate",
+        correct: "緩和する",
+        options: ["奨励する", "緩和する", "混乱させる", "定義する"]
+      },
+      {
+        word: "sustain",
+        correct: "維持する",
+        options: ["取り除く", "維持する", "隠す", "拡張する"]
+      },
+      {
+        word: "advocate",
+        correct: "支持する",
+        options: ["拒否する", "支持する", "誤解する", "避ける"]
+      },
+      {
+        word: "deteriorate",
+        correct: "悪化する",
+        options: ["改善する", "保存する", "悪化する", "修復する"]
+      },
+      {
+        word: "viable",
+        correct: "実行可能な",
+        options: ["危険な", "実行可能な", "否定的な", "過剰な"]
+      },
+      {
+        word: "subsequently",
+        correct: "その後に",
+        options: ["一時的に", "その後に", "すぐに", "永久に"]
+      },
+      {
+        word: "comprehensive",
+        correct: "包括的な",
+        options: ["表面的な", "包括的な", "単純な", "細分化された"]
+      },
+      {
+        word: "precaution",
+        correct: "予防措置",
+        options: ["予防措置", "反論", "助言", "緊急事態"]
+      },
+      {
+        word: "contemplate",
+        correct: "熟考する",
+        options: ["拒否する", "熟考する", "参加する", "説得する"]
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let total = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function updateScore() {
+      document.getElementById('score').textContent = `スコア: ${score} / ${total}`;
+    }
+
+    function loadQuestion() {
+      const q = quizData[current];
+      document.getElementById('question').textContent = `"${q.word}" の意味は？`;
+      const opts = shuffle([...q.options]);
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('next-btn').style.display = 'none';
+
+      opts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => {
+          const isCorrect = opt === q.correct;
+          if (isCorrect) score++;
+          total++;
+          document.getElementById('feedback').textContent =
+            isCorrect ? "正解！🎉" : `不正解。正解は：${q.correct}`;
+          document.getElementById('next-btn').style.display = 'inline-block';
+          Array.from(optionsDiv.children).forEach(b => b.disabled = true);
+          updateScore();
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function nextQuestion() {
+      current = (current + 1) % quizData.length;
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
